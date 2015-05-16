@@ -1,0 +1,13 @@
+#
+# Default configuration for hts-skipper
+#
+# This doesn't contain a lot of settings. See /etc/comskip/hts_skipper.xml for more settings
+
+# SKP_ENABLED
+#   set to 0 to disable upstart job
+SKP_ENABLED=1
+
+# SKP_DELAY
+#   if set startup will be delayed N seconds to allow hardware init
+SKP_DELAY=""
+

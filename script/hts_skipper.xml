@@ -1,0 +1,19 @@
+<settings>
+    <setting id="server" value="http://localhost" />
+    <setting id="userpass" value="me:mypass" />
+    <setting id="maxattempts" value="10" />
+    <setting id="sleepbetweenattempts" value="5" />
+    <setting id="recordingpath" value="/mnt/somedisk/Recorded TV" />
+    <setting id="logpath" value="/var/log/hts_skipper.log" />
+    <setting id="comskipperlocation" value="/usr/bin/comskipper" />
+    <setting id="simultaneousskippers" value="1" />
+    <setting id="updateinterval" value="20" />
+    <setting id="logskipperdata" value="True" />
+    <setting id="logskippersettings" value="False" />
+    <setting id="delete_edl" value="False" />
+    <setting id="delete_log" value="True" />
+    <setting id="delete_logo" value="True" />
+    <setting id="delete_txt" value="True" />
+    <setting id="storedb" value="True" />
+    <setting id="dblocation" value="/etc/comskip" />
+</settings>
