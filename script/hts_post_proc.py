@@ -38,7 +38,7 @@ class DiskDataBaseItem:
 class Settings(object):
     def __init__(self):
         self.settings = []
-        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
+        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
         self.GetSettingsHtsSkipperXml()
 
     def GetSettingsHtsSkipperXml(self):

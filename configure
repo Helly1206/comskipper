@@ -7,21 +7,30 @@ MAKEFILE="./Makefile"
 # This script is not complete and not tested under all platform
 
 echo "Configure for comskipper"
-echo "Version 0.80"
+echo "Version 0.90"
 #echo "comskipper = comskippar = comskipparallel"
 echo ""
 
 if [ -z "$1" ]; then
         echo "No argument given"
-	echo "Usage ./configure <path to working comskip build and source>"
+	echo "Usage ./configure <path to working comskip build and source> <--upstart>"
+	echo "<--upstart> is optional when using upstart, otherwise leave empty"
 	exit 1
 fi
 
 if [ ! -d "$1" ]; then
         echo "Directory doesn't exist"
-	echo "Usage ./configure <path to working comskip build and source>"
+	echo "Usage ./configure <path to working comskip build and source> <--upstart>"
+	echo "<--upstart> is optional when using upstart, otherwise leave empty"
 	exit 1
 fi
+
+shopt -s nocasematch
+if [[ "$2" == "--upstart" ]]; then
+	echo "Configuring for upstart ..."
+	START="Upstart"
+fi
+shopt -u nocasematch
 
 CSDIR=${1%/}
 
@@ -85,11 +94,13 @@ make -p -C $1|grep -w "INSTALL_SCRIPT ="|tail -n 1 >>$MAKEFILE
 echo "etcdir = /etc" >>$MAKEFILE
 echo "confdir = \${etcdir}/comskip" >>$MAKEFILE
 echo "initdir = \${etcdir}/init" >>$MAKEFILE
+echo "servicedir = \${etcdir}/systemd/system" >>$MAKEFILE
 echo "defaultdir = \${etcdir}/default" >>$MAKEFILE
 echo "scriptdir = ./script" >>$MAKEFILE
 echo "admscript = hts_skipper.py" >>$MAKEFILE
 echo "postprocscript = hts_post_proc.py" >>$MAKEFILE
 echo "initscript = hts-skipper.conf" >>$MAKEFILE
+echo "servicescript = hts-skipper.service" >>$MAKEFILE
 echo "defaultscript = hts-skipper" >>$MAKEFILE
 echo "defaultxml = hts_skipper.xml" >>$MAKEFILE
 
@@ -147,8 +158,14 @@ echo "installscript:" >>$MAKEFILE
 echo -e "\tif [ ! -e \$(confdir) ]; then mkdir \$(confdir); fi" >>$MAKEFILE
 echo -e "\t\$(INSTALL_SCRIPT) \"\$(scriptdir)/\$(admscript)\" \"\$(confdir)\"" >>$MAKEFILE
 echo -e "\t\$(INSTALL_SCRIPT) \"\$(scriptdir)/\$(postprocscript)\" \"\$(confdir)\"" >>$MAKEFILE
-echo -e "\tif [ ! -e \$(initdir) ]; then mkdir \$(initdir); fi" >>$MAKEFILE
-echo -e "\t\$(INSTALL_DATA) \"\$(scriptdir)/\$(initscript)\" \"\$(initdir)\"" >>$MAKEFILE
+if [ -z "$START" ]; then
+	echo -e "\tif [ ! -e \$(servicedir) ]; then mkdir \$(servicedir); fi" >>$MAKEFILE
+	echo -e "\t\$(INSTALL_DATA) \"\$(scriptdir)/\$(servicescript)\" \"\$(servicedir)\"" >>$MAKEFILE
+	echo -e "\tsystemctl enable \"\$(servicescript)\"" >>$MAKEFILE
+else
+	echo -e "\tif [ ! -e \$(initdir) ]; then mkdir \$(initdir); fi" >>$MAKEFILE
+	echo -e "\t\$(INSTALL_DATA) \"\$(scriptdir)/\$(initscript)\" \"\$(initdir)\"" >>$MAKEFILE
+fi
 echo -e "\tif [ ! -e \$(defaultdir) ]; then mkdir \$(defaultdir); fi" >>$MAKEFILE
 echo -e "\t\$(INSTALL_DATA) \"\$(scriptdir)/\$(defaultscript)\" \"\$(defaultdir)\"" >>$MAKEFILE
 echo -e "\tif [ ! -e \$(confdir)/\$(defaultxml) ]; then \$(INSTALL_DATA) \"\$(scriptdir)/\$(defaultxml)\" \"\$(confdir)\"; fi" >>$MAKEFILE
@@ -157,6 +174,7 @@ echo "uninstallscript:" >>$MAKEFILE
 echo -e "\t-test -z \"\$(confdir)/\$(admscript)\" || rm -f \"\$(confdir)/\$(admscript)\"" >>$MAKEFILE
 echo -e "\t-test -z \"\$(confdir)/\$(postprocscript)\" || rm -f \"\$(confdir)/\$(postprocscript)\"" >>$MAKEFILE
 echo -e "\t-test -z \"\$(initdir)/\$(initscript)\" || rm -f \"\$(initdir)/\$(initscript)\"" >>$MAKEFILE
+echo -e "\t-test -z \"\$(servicedir)/\$(servicescript)\" || rm -f \"\$(servicedir)/\$(servicescript)\"" >>$MAKEFILE
 echo -e "\t-test -z \"\$(defaultdir)/\$(defaultscript)\" || rm -f \"\$(defaultdir)/\$(defaultscript)\"" >>$MAKEFILE
 echo "" >>$MAKEFILE
 echo "uninstallsettings:" >>$MAKEFILE

@@ -1,0 +1,8 @@
+[B]0.9.0[/B]
+- Changes to scripts:
+	- More robust cleanup of database in case of failed recordings
+	- added ini-file location as setting in xml file and scripts
+	- install script for systemd (upstart stays uptional: sudo ./configure "location" --upstart)
+
+[B]0.8.0[/B]
+- Initial release

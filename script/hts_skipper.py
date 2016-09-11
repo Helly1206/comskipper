@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# /usr/local/bin/comskip-gui --ini=/etc/comskip/comskip.ini -w /mnt/htpc_disk/Recorded\ TV/De\ marathon.mkv
+
 import os
 import subprocess
 import threading
@@ -116,7 +118,7 @@ class logger(threading.Thread):
 class Settings(object):
     def __init__(self):
         self.settings = []
-        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
+        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
         self.GetSettingsHtsSkipperXml()
 
     def GetSettingsHtsSkipperXml(self):
@@ -176,7 +178,10 @@ class ComSkipper(object):
             _stderr=logger
         else:
             _stderr=DEVNULL
-        process = [self.__settings.GetSetting("comskipperlocation"),"-e",str(endtime),filename]
+        if self.__settings.GetSetting("inilocation") == '':
+        	process = [self.__settings.GetSetting("comskipperlocation"),"-e",str(endtime),filename]
+        else:
+        	process = [self.__settings.GetSetting("comskipperlocation"),"--ini=%s"%(self.__settings.GetSetting("inilocation")),"-e",str(endtime),filename]
         self.p = subprocess.Popen(process, stdout=_stdout, stderr=_stderr)
 
     def Busy(self):
@@ -358,6 +363,32 @@ class Database(object):
         while (CheckDB):
             CheckDB = False
             for dbitem in self.DataBase:
+                if (dbitem.Status == QUEUED):
+                    #Check beyond endtime and no filename
+                    if (dbitem.FileName == None):
+                        dbitem.FileName = self.GetRecordingName(dbitem.Recording.Title)
+                    elif not os.path.isfile(dbitem.FileName):
+                        #File deleted
+                        dbitem.FileName = None
+                    if (dbitem.FileName == None):
+                        curtime=int(time.time())
+                        if (curtime > dbitem.Recording.Stop):
+                            #Recording finished and still no filename, delete from database
+                            changeditems+=1
+                            self.__logger.info("DB: Init - %s queued, but no file found beyond finish time" % dbitem.Recording.Title)
+                            self.__logger.info("DB: Init - %s recording probably failed, so removing it from db" % dbitem.Recording.Title)
+                            if dbitem.Skipper != None:
+                                del dbitem.Skipper
+                            if dbitem.Recording != None:
+                                del dbitem.Recording
+                            dbitem.Skipper = None
+                            dbitem.Recording = None
+                            self.DataBase.remove(dbitem)
+                            CheckDB = True
+                        else:
+                            self.__logger.info("DB: Init - %s queued, but no file to skip found (yet)" % dbitem.Recording.Title)
+                    else:
+                        self.__logger.info("DB: Init - %s queued, re-queue to restart" % dbitem.Recording.Title)
                 if (dbitem.Status == FINISHED):
                     changeditems+=1
                     self.__logger.info("DB: Init - %s finished, so removing it from db" % dbitem.Recording.Title)
@@ -526,7 +557,7 @@ class Database(object):
             if (dbitem.Status == SKIPPING):
                 nskippers += 1
             elif (dbitem.Status == QUEUED):
-                if dbitem.FileName == None: 
+                if dbitem.FileName == None:
                     dbitem.FileName = self.GetRecordingName(dbitem.Recording.Title)
         if (nskippers < maxskippers):
             for dbitem in self.DataBase:
@@ -540,7 +571,21 @@ class Database(object):
                         nskippers += 1
                         startitems += 1
                     else:
-                        self.__logger.info("DB: Recording - %s started, but no file to skip found (yet)" % dbitem.Recording.Title)
+                        curtime=int(time.time())
+                        if (curtime > dbitem.Recording.Stop):
+                            #Recording finished and still no filename, delete from database
+                            startitems += 1
+                            self.__logger.info("DB: Recording - %s started, but no file found beyond finish time" % dbitem.Recording.Title)
+                            self.__logger.info("DB: Recording - %s recording probably failed, so removing it from db" % dbitem.Recording.Title)
+                            if dbitem.Skipper != None:
+                                del dbitem.Skipper
+                            if dbitem.Recording != None:
+                                del dbitem.Recording
+                            dbitem.Skipper = None
+                            dbitem.Recording = None
+                            self.DataBase.remove(dbitem)
+                        else:
+                            self.__logger.info("DB: Recording - %s started, but no file to skip found (yet)" % dbitem.Recording.Title)
                     if (nskippers >= maxskippers):
                         break
         return startitems
