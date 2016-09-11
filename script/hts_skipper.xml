@@ -5,7 +5,7 @@
     <setting id="sleepbetweenattempts" value="5" />
     <setting id="recordingpath" value="/mnt/somedisk/Recorded TV" />
     <setting id="logpath" value="/var/log/hts_skipper.log" />
-    <setting id="comskipperlocation" value="/usr/bin/comskipper" />
+    <setting id="comskiplocation" value="/usr/local/bin/comskip" />
     <setting id="inilocation" value="/etc/comskip/comskip.ini" />
     <setting id="simultaneousskippers" value="1" />
     <setting id="updateinterval" value="20" />

@@ -1,10 +1,7 @@
-# hts-skipper - Comskipper administration daemon for TVHeadend
-#
-# Comskipper is a 'on the fly' version of comskip that is capable of
-# processing the file while still recording
+# hts-skipper - comskip administration daemon for TVHeadend
 
 [Unit]
-Description=Comskipper administration for TVHeadend
+Description=Comskip administration for TVHeadend
 
 [Service]
 Type=forking

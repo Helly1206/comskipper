@@ -38,7 +38,7 @@ class DiskDataBaseItem:
 class Settings(object):
     def __init__(self):
         self.settings = []
-        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
+        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskiplocation', u'/usr/local/bin/comskip'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
         self.GetSettingsHtsSkipperXml()
 
     def GetSettingsHtsSkipperXml(self):
@@ -155,7 +155,7 @@ class Database(object):
         return None
 
     def GetComSkipperPIDs(self):
-        _syscmd = subprocess.Popen(['pidof', self.__settings.GetSetting("comskipperlocation")], stdout=subprocess.PIPE)
+        _syscmd = subprocess.Popen(['pidof', self.__settings.GetSetting("comskiplocation")], stdout=subprocess.PIPE)
         return _syscmd.stdout.read().strip().split()
 
     def CountSkippers(self):
@@ -173,28 +173,28 @@ class Database(object):
             if (self.__filename == None): #Wait for all skippers finished
                 nPIDs = len(self.GetComSkipperPIDs())
                 if (nPIDs > 0):
-                    print "No Item found: wait until %d ComSkippers are finished" % (nPIDs)
+                    print "No Item found: wait until %d ComSkips are finished" % (nPIDs)
                     ExitProg = False
                 else:
-                    print "No Item found, no ComSkippers either, exit"
+                    print "No Item found, no ComSkips either, exit"
                     ExitProg = True
             else: #Filename not found, exit
                 print "No Item found by filename and PID, exit"
                 ExitProg = True    
         else: #we do have an item to check
             if (dbitem.Status == SKIPPING):
-                 print "ComSkipper still busy, wait until finished"
+                 print "ComSkip still busy, wait until finished"
                  ExitProg = False # wait till finished
             elif (dbitem.Status == FINISHED):
-                 print "ComSkipper finished, exit"
+                 print "ComSkip finished, exit"
                  ExitProg = True
             else: # (dbitem.Status == QUEUED):
                 Skippers = self.CountSkippers()
                 if (Skippers >= int(self.__settings.GetSetting("simultaneousskippers"))):
-                    print "ComSkipper Queued and all ComSkippers in use, wait until finished"
+                    print "ComSkip Queued and all ComSkips in use, wait until finished"
                     ExitProg = False
                 else:
-                    print "ComSkipper Queued but not all ComSkippers in use, exit"
+                    print "ComSkip Queued but not all ComSkips in use, exit"
                     ExitProg = True
         return ExitProg
 
@@ -230,7 +230,7 @@ signal.signal(signal.SIGINT, sigterm_handler)
 #Read settings file, no logger location yet, refer to defaults if fails
 Settings = Settings()
 
-print "Comskipper HTS Post Processor Started ..."
+print "Comskip HTS Post Processor Started ..."
 
 if len(sys.argv) > 1:
     FileName = sys.argv[1]
@@ -253,5 +253,5 @@ while (Running and not Stop):
 del DB
 del Settings
 
-print "Comskipper HTS Post Processor Ready ..."
+print "Comskip HTS Post Processor Ready ..."
 

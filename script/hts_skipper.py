@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# /usr/local/bin/comskip-gui --ini=/etc/comskip/comskip.ini -w /mnt/htpc_disk/Recorded\ TV/De\ marathon.mkv
-
 import os
 import subprocess
 import threading
@@ -118,7 +116,7 @@ class logger(threading.Thread):
 class Settings(object):
     def __init__(self):
         self.settings = []
-        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskipperlocation', u'/usr/bin/comskipper'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
+        self.defaults = [[u'server', u'http://localhost'], [u'userpass', u'xbmc:xbmc'], [u'maxattempts', u'10'], [u'sleepbetweenattempts', u'5'], [u'recordingpath', u'/kodi/Recorded TV'], [u'logpath', u'/var/log/comskip'], [u'comskiplocation', u'/usr/local/bin/comskip'],[u'inilocation', u''], [u'simultaneousskippers', u'1'], [u'updateinterval', u'20'], [u'logskipperdata', u'True'], [u'logskippersettings', u'False'], [u'delete_edl', u'True'], [u'delete_log', u'True'], [u'delete_logo', u'True'], [u'delete_txt', u'False'], [u'storedb', u'True'], [u'dblocation', u'/etc/comskip']]
         self.GetSettingsHtsSkipperXml()
 
     def GetSettingsHtsSkipperXml(self):
@@ -179,9 +177,9 @@ class ComSkipper(object):
         else:
             _stderr=DEVNULL
         if self.__settings.GetSetting("inilocation") == '':
-        	process = [self.__settings.GetSetting("comskipperlocation"),"-e",str(endtime),filename]
+        	process = [self.__settings.GetSetting("comskiplocation"),filename]
         else:
-        	process = [self.__settings.GetSetting("comskipperlocation"),"--ini=%s"%(self.__settings.GetSetting("inilocation")),"-e",str(endtime),filename]
+        	process = [self.__settings.GetSetting("comskiplocation"),"--ini=%s"%(self.__settings.GetSetting("inilocation")),filename]
         self.p = subprocess.Popen(process, stdout=_stdout, stderr=_stderr)
 
     def Busy(self):

@@ -2,95 +2,31 @@
 
 MAKEFILE="./Makefile"
 
-# This script builds the makefile for comskipper
+# This script builds the makefile for hts-skipper
 # It requires a link to a working comskip version
 # This script is not complete and not tested under all platform
 
-echo "Configure for comskipper"
-echo "Version 0.90"
+echo "Configure for hts-skipper"
+echo "Version 1.00"
+echo "Usage ./configure <--upstart>"
+echo "<--upstart> is optional when using upstart, otherwise leave empty"
 #echo "comskipper = comskippar = comskipparallel"
 echo ""
 
-if [ -z "$1" ]; then
-        echo "No argument given"
-	echo "Usage ./configure <path to working comskip build and source> <--upstart>"
-	echo "<--upstart> is optional when using upstart, otherwise leave empty"
-	exit 1
-fi
-
-if [ ! -d "$1" ]; then
-        echo "Directory doesn't exist"
-	echo "Usage ./configure <path to working comskip build and source> <--upstart>"
-	echo "<--upstart> is optional when using upstart, otherwise leave empty"
-	exit 1
-fi
-
 shopt -s nocasematch
-if [[ "$2" == "--upstart" ]]; then
+if [[ "$1" == "--upstart" ]]; then
 	echo "Configuring for upstart ..."
 	START="Upstart"
 fi
 shopt -u nocasematch
 
-CSDIR=${1%/}
-
 echo "Building Makefile ..."
 
-echo "CSPATH=$CSDIR" >$MAKEFILE
-make -p -C $1|grep -w "bin_PROGRAMS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "comskip_SOURCES ="|tail -n 1 >>$MAKEFILE
-echo "COMSKIPPER = comskipper" >>$MAKEFILE
-echo "comskip_SOURCES := \$(COMSKIPPER).cpp \$(comskip_SOURCES)" >>$MAKEFILE
-echo "OBJCOPY=objcopy" >>$MAKEFILE
-echo "EXECUTABLE=comskipper" >> $MAKEFILE
-make -p -C $1|grep -w "EXEEXT ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "OBJEXT ="|tail -n 1 >>$MAKEFILE
-echo "bin_PROGRAMS=\$(EXECUTABLE)\$(EXEEXT)" >>$MAKEFILE
-echo "" >>$MAKEFILE
-EXOBJ="comskip-mpeg2dec"
-echo "EXCLUDEOBJ = $EXOBJ.\$(OBJEXT)" >>$MAKEFILE
-echo "MPEG2DECSRC = mpeg2dec.cpp" >>$MAKEFILE
-echo "" >>$MAKEFILE
-#Flags for compiler
-make -p -C $1|grep -w "CXX ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "DEFS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "DEFAULT_INCLUDES ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "INCLUDES ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "CPPFLAGS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "comskip_CPPFLAGS ="|tail -n 1 >>$MAKEFILE
-echo "comskip_CPPFLAGS := \$(comskip_CPPFLAGS) -I\$(CSPATH)" >>$MAKEFILE
-make -p -C $1|grep -w "AM_CXXFLAGS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "CXXFLAGS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "DEPDIR ="|tail -n 1 >>$MAKEFILE
-echo "DEPDIR = \$CSPATH/\$DEPDIR" >>$MAKEFILE
-make -p -C $1|grep -w "am__mv ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "CXXCOMPILE ="|tail -n 1 >>$MAKEFILE
-echo "comskipper_SOURCEFILES = \$(COMSKIPPER).cpp" >>$MAKEFILE
-echo "" >>$MAKEFILE
-#Flags for linker
-make -p -C $1|grep -w "OBJEXT ="|tail -n 1 >>$MAKEFILE
-#make -p -C $1|grep -w "am_comskip_OBJECTS ="|tail -n 1|sed -- 's/$EXEOBJ.o//g' >>$MAKEFILE
-make -p -C $1|grep -w "am_comskip_OBJECTS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "comskip_OBJECTS ="|tail -n 1 >>$MAKEFILE
-echo "comskipper_OBJECTS = \$(filter-out \$(EXCLUDEOBJ),\$(comskip_OBJECTS))" >>$MAKEFILE
-echo "comskipper_OBJECTS := \$(COMSKIPPER).\$(OBJEXT) \$(comskipper_OBJECTS)" >>$MAKEFILE
-make -p -C $1|grep -w "comskip_DEPENDENCIES ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "EXTRA_comskip_DEPENDENCIES ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "CXXLD ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "AM_LDFLAGS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "LDFLAGS ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "CXXLINK ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "comskip_LDADD ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "LIBS ="|tail -n 1 >>$MAKEFILE
-echo "" >>$MAKEFILE
 #flags for installer
-make -p -C $1|grep -w "prefix ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "exec_prefix ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "bindir ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "INSTALL ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "INSTALL_DATA ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "INSTALL_PROGRAM ="|tail -n 1 >>$MAKEFILE
-make -p -C $1|grep -w "INSTALL_SCRIPT ="|tail -n 1 >>$MAKEFILE
+echo "INSTALL = /usr/bin/install -c" >$MAKEFILE
+echo "INSTALL_DATA = \${INSTALL} -m 644" >>$MAKEFILE
+echo "INSTALL_PROGRAM = \${INSTALL}" >>$MAKEFILE
+echo "INSTALL_SCRIPT = \${INSTALL}" >>$MAKEFILE
 echo "etcdir = /etc" >>$MAKEFILE
 echo "confdir = \${etcdir}/comskip" >>$MAKEFILE
 echo "initdir = \${etcdir}/init" >>$MAKEFILE
@@ -105,54 +41,14 @@ echo "defaultscript = hts-skipper" >>$MAKEFILE
 echo "defaultxml = hts_skipper.xml" >>$MAKEFILE
 
 echo "" >>$MAKEFILE
-#echo "all: \$(comskip_OBJECTS) \$(bin_PROGRAMS)" >>$MAKEFILE
-echo "all: clean executable" >>$MAKEFILE
+echo "all: install" >>$MAKEFILE
 echo "" >>$MAKEFILE
-echo "objects:" >>$MAKEFILE
-echo -e "\t@for object in \$(comskip_OBJECTS); do \\" >> $MAKEFILE
-echo -e "\t\tif [ ! -e \$(CSPATH)/\$\$object ]; then echo \"File doesnt exist, recompile comskip: \$(CSPATH)/\$\$object\"; exit 1; fi; \\" >>$MAKEFILE
-echo -e "\t\tif [ \"\$\$object\" = \"\$(EXCLUDEOBJ)\" ]; then \\" >>$MAKEFILE
-echo -e "\t\t\techo \"Excluded Object file: \$(CSPATH)/\$\$object\"; \\" >>$MAKEFILE
-echo -e "\t\telse \\" >>$MAKEFILE
-echo -e "\t\t\t\$(OBJCOPY) \$(CSPATH)/\$\$object \$\$object; \\" >>$MAKEFILE
-echo -e "\t\t\techo \"Object file copied: \$(CSPATH)/\$\$object\"; \\" >>$MAKEFILE
-echo -e "\t\tfi; \\" >>$MAKEFILE
-echo -e "\tdone" >>$MAKEFILE
+
+echo "install: installscript" >>$MAKEFILE
 echo "" >>$MAKEFILE
-echo "csmain:" >>$MAKEFILE
-echo -e "\t@if [ ! -e \$(CSPATH)/\$(MPEG2DECSRC) ]; then echo \"File doesnt exist: \$(CSPATH)/\$(MPEG2DECSRC)\"; exit 1; fi" >>$MAKEFILE
-echo -e "\t@cp \$(CSPATH)/\$(MPEG2DECSRC) \$(MPEG2DECSRC)" >>$MAKEFILE
-echo -e "\t@./comment_c.py \$(MPEG2DECSRC) \"namespace CS {\\\n\\\nvoid FramesPerSecond::print(bool final)\"" >>$MAKEFILE
-echo -e "\t@./comment_c.py \$(MPEG2DECSRC) \"int main (int argc, char **argv)\\\n{\"" >>$MAKEFILE
-echo -e "\t@echo \"File copied and modified: \$(CSPATH)/\$(MPEG2DECSRC)\" " >>$MAKEFILE
+echo "uninstall: uninstallscript" >>$MAKEFILE
 echo "" >>$MAKEFILE
-echo "source: \$(comskipper_SOURCEFILES)" >>$MAKEFILE
-echo -e "\t@for object in \$(comskipper_SOURCEFILES); do \\" >> $MAKEFILE
-echo -e "\t\t\$(CXX) \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(comskip_CPPFLAGS) \$(CPPFLAGS) \$(AM_CXXFLAGS) \$(CXXFLAGS) -c \$\$object; \\" >>$MAKEFILE
-echo -e "\t\techo \"\$(CXX) \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(comskip_CPPFLAGS) \$(CPPFLAGS) \$(AM_CXXFLAGS) \$(CXXFLAGS) -c \$\$object \"; \\" >>$MAKEFILE
-echo -e "\tdone" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "executable: csmain source objects \$(comskip_DEPENDENCIES) \$(EXTRA_comskip_DEPENDENCIES)" >>$MAKEFILE
-echo -e "\t@rm -f \$(EXECUTABLE)\$(EXEEXT)" >>$MAKEFILE
-echo -e "\t\$(CXXLINK) -o \$(EXECUTABLE)\$(EXEEXT) \$(comskipper_OBJECTS) \$(comskip_LDADD) \$(LIBS)" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "clean:" >>$MAKEFILE
-echo -e "\t-test -z \"\$(MPEG2DECSRC)\" || rm -f \$(MPEG2DECSRC)" >>$MAKEFILE
-echo -e "\t-test -z \"\$(bin_PROGRAMS)\" || rm -f \$(bin_PROGRAMS)" >>$MAKEFILE
-echo -e "\t-test -z \"\$(comskipper_OBJECTS)\" || rm -f \$(comskipper_OBJECTS)" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "install: installprogram installscript" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "uninstall: uninstallprogram uninstallscript" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "uninstallall: uninstallprogram uninstallscript uninstallsettings" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "installprogram:" >>$MAKEFILE
-echo -e "\tif [ ! -e \$(bindir) ]; then mkdir \$(bindir); fi" >>$MAKEFILE
-echo -e "\t\$(INSTALL_PROGRAM) \"\$(EXECUTABLE)\$(EXEEXT)\" \"\$(bindir)\"" >>$MAKEFILE
-echo "" >>$MAKEFILE
-echo "uninstallprogram:" >>$MAKEFILE
-echo -e "\t-test -z \"\$(bindir)/\$(EXECUTABLE)\$(EXEEXT)\" || rm -f \"\$(bindir)/\$(EXECUTABLE)\$(EXEEXT)\"" >>$MAKEFILE
+echo "uninstallall: uninstallscript uninstallsettings" >>$MAKEFILE
 echo "" >>$MAKEFILE
 echo "installscript:" >>$MAKEFILE
 echo -e "\tif [ ! -e \$(confdir) ]; then mkdir \$(confdir); fi" >>$MAKEFILE
