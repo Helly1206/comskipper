@@ -1,3 +1,10 @@
+[B]1.0.0[/B]
+- As the official comskip runs on linux and has live-tv functionality, comskipper is obsolete
+- Download from: https://github.com/erikkaashoek/Comskip
+- And check installation notes
+- However hts-skipper remains having added value and is adapted for comskip
+- comskipper is still available on comskipper branch, but is not updated anymore as comskip-0.93x is not updated anymore
+
 [B]0.9.0[/B]
 - Changes to scripts:
 	- More robust cleanup of database in case of failed recordings
