@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import sys
 import os
 import subprocess
 import threading
@@ -195,13 +196,14 @@ class ComSkipper(object):
 ###########################
 
 class HTS(object):
-    def __init__(self, Settings, logger):
+    def __init__(self, Settings, logger, Test):
         self.__settings = Settings
         self.__logger = logger
         self.__conn_established = None
         #self.__xml = None
         self.__maxattempts = 10
-        self.establishConn()
+        if not Test:
+            self.establishConn()
 
     def establishConn(self):
         if (DEBUG):
@@ -255,6 +257,18 @@ class HTS(object):
                 time.sleep(5)
                 self.establishConn()
         return nodedata
+
+    def getTestRecording(self,FileName):
+        Recordings = []
+
+        if os.path.isfile(FileName):
+            Rec = Recording()
+            Rec.Start=int(time.time()) # just now
+            Rec.Stop=Rec.Start+2*3600 # make it 2 hours
+            Rec.Title=os.path.splitext(os.path.basename(FileName))[0]
+            Rec.Status=RECORDING
+            Recordings.append(Rec)
+        return Recordings
 
     def readXMLRecordings(self):
         Recordings = []
@@ -435,7 +449,7 @@ class Database(object):
         for rec in Recordings:
             del rec
         del Recordings
-        return
+        return []
 
     def CheckForNewItems(self, Recordings):
         newitems = 0
@@ -561,7 +575,7 @@ class Database(object):
             for dbitem in self.DataBase:
                 if (dbitem.Status == QUEUED):
                     dbitem.Skipper = ComSkipper(self.__settings, self.__logger)
-                    if dbitem.FileName != None:                    
+                    if dbitem.FileName != None:
                         dbitem.Skipper.Start(dbitem.FileName, dbitem.Recording.Stop)
                         self.__logger.info("DB: Skipping - %s started" % dbitem.Recording.Title)
                         dbitem.Status = SKIPPING
@@ -617,6 +631,7 @@ class Database(object):
 ### 
 
 Running = True
+Test = False
 
 def sigterm_handler(signum, frame):
     global Running
@@ -632,10 +647,17 @@ Settings = Settings()
 
 #init logger
 logger=logger(Settings)
-logger.info("Started ...")
+logger.info("Comskip HTS Started ...")
+
+if len(sys.argv) > 1:
+    FileName = sys.argv[1]
+    logger.info("Test mode, no daemon on File:%s"%FileName)
+    Test = True
+else:
+    FileName = None
 
 #init HTS
-TVH = HTS(Settings, logger)
+TVH = HTS(Settings, logger, Test)
 
 #init Database
 DB = Database(Settings, logger)
@@ -643,16 +665,22 @@ DB = Database(Settings, logger)
 #cleanup deleted recordings 
 DB.CleanupDeletedRecordings()
 
+#Get recording in test mode
+Recordings = []
+if (FileName != None):
+    Recordings = TVH.getTestRecording(FileName)
+
 looptime = 1
 while (Running):
     time.sleep(1)
     if looptime <= 1:
         # Check recordings
-        Recordings = TVH.readXMLRecordings()
+        if (FileName == None):
+            Recordings = TVH.readXMLRecordings()
         if (DEBUG):
             for rec in Recordings:
                 logger.info("start:%d, stop:%d, title:%s, status:%d" % (rec.Start, rec.Stop, rec.Title, rec.Status))        
-        DB.Update(Recordings)
+        Recordings = DB.Update(Recordings)
         looptime = int(Settings.GetSetting('updateinterval'))
     else:
         looptime -= 1
@@ -661,7 +689,7 @@ del DB
 del TVH
 del Settings
 
-logger.info("Ready ...");
+logger.info("Comskip HTS Ready ...");
 
 logger.close()
 del logger

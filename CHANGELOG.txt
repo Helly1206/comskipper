@@ -1,9 +1,15 @@
 [B]1.0.0[/B]
+- Updated to better handling of old files
+- Added test functionality to test on a pre-recorded file
+- Tested and updated systemd daemon functionality
+
+[B]0.9.9[/B]
 - As the official comskip runs on linux and has live-tv functionality, comskipper is obsolete
-- Download from: https://github.com/erikkaashoek/Comskip
+- Download from: https://github.com/erikkaashoek/Comskip (or directly as executable when running on windows)
 - And check installation notes
 - However hts-skipper remains having added value and is adapted for comskip
 - comskipper is still available on comskipper branch, but is not updated anymore as comskip-0.93x is not updated anymore
+- test version, never released
 
 [B]0.9.0[/B]
 - Changes to scripts:

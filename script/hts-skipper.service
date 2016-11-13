@@ -4,7 +4,6 @@
 Description=Comskip administration for TVHeadend
 
 [Service]
-Type=forking
 EnvironmentFile=-/etc/default/hts-skipper
 ExecStartPre=-/bin/sh -c '[ "$SKP_ENABLED" = "1" ] & [ ! -z "$SKP_DELAY" ] && sleep $SKP_DELAY; [ "$SKP_ENABLED" = "1" ]'
 ExecStart=/etc/comskip/hts_skipper.py

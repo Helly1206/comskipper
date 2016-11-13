@@ -9,7 +9,7 @@
     <setting id="inilocation" value="/etc/comskip/comskip.ini" />
     <setting id="simultaneousskippers" value="1" />
     <setting id="updateinterval" value="20" />
-    <setting id="logskipperdata" value="True" />
+    <setting id="logskipperdata" value="False" />
     <setting id="logskippersettings" value="False" />
     <setting id="delete_edl" value="False" />
     <setting id="delete_log" value="True" />
