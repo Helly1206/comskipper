@@ -7,7 +7,7 @@ MAKEFILE="./Makefile"
 # This script is not complete and not tested under all platform
 
 echo "Configure for hts-skipper"
-echo "Version 1.00"
+echo "Version 1.01"
 echo "Usage ./configure <--upstart>"
 echo "<--upstart> is optional when using upstart, otherwise leave empty"
 #echo "comskipper = comskippar = comskipparallel"

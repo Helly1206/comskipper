@@ -540,7 +540,7 @@ class Database(object):
                     if TestFunction(itempath, title):
                         files.append(itempath)
                 elif os.path.isdir(itempath):
-                    files = self.GetFiles(itempath, title)
+                    files = self.GetFiles(itempath, title, files, TestFunction)
         return files
 
     def GetRecordingName(self, Title):

@@ -1,3 +1,6 @@
+[B]1.0.1[/B]
+- Fixed bug in cleanup function
+
 [B]1.0.0[/B]
 - Updated to better handling of old files
 - Added test functionality to test on a pre-recorded file
