@@ -1,4 +1,4 @@
-HTS-skipper: v1.0.0
+HTS-skipper: v1.0.2
 
 Software is made under GNU PUBLIC LICENSE (see LICENSE.txt)
 

@@ -217,7 +217,7 @@ class HTS(object):
                     pwd_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
                     upass=self.__settings.GetUserPassword(self.__settings.GetSetting('userpass'))
                     pwd_mgr.add_password(None, self.__settings.GetSetting('server') + TVHPORT, upass[0], upass[1])
-                    handle = urllib2.HTTPBasicAuthHandler(pwd_mgr)
+                    handle = urllib2.HTTPDigestAuthHandler(pwd_mgr)
                     opener = urllib2.build_opener(handle)
                     opener.open(self.__settings.GetSetting('server') + TVHPORT)
                     urllib2.install_opener(opener)
